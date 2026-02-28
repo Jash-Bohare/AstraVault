@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { generateMnemonic, derivePrivateKey, privateKeyToAddress } from "../core/wallet";
-import { getBalance } from "../rpc/balance";
+import {
+  generateMnemonic,
+  derivePrivateKey,
+  privateKeyToAddress
+} from "../core/wallet";
+import { encryptPrivateKey } from "../utils/crypto";
 import { useNavigate } from "react-router-dom";
 
 export default function Create() {
   const [mnemonic, setMnemonic] = useState(null);
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -14,23 +19,34 @@ export default function Create() {
   }
 
   async function handleContinue() {
-    setLoading(true);
+    if (!password || password.length < 6) {
+      alert("Password must be at least 6 characters");
+      return;
+    }
 
-    const pk = await derivePrivateKey(mnemonic);
-    const address = privateKeyToAddress(pk);
-    const balance = await getBalance(address);
+    try {
+      setLoading(true);
 
-    localStorage.setItem(
-      "wallet",
-      JSON.stringify({
-        mnemonic,
-        address,
-        balance
-      })
-    );
+      const pk = await derivePrivateKey(mnemonic);
+      const address = privateKeyToAddress(pk);
 
-    setLoading(false);
-    navigate("/dashboard");
+      const encrypted = await encryptPrivateKey(pk, password);
+
+      localStorage.setItem(
+        "wallet",
+        JSON.stringify({
+          address,
+          crypto: encrypted
+        })
+      );
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -46,13 +62,23 @@ export default function Create() {
       {mnemonic && (
         <>
           <h3>Your Secret Recovery Phrase</h3>
+
           <p style={{ background: "#eee", padding: "10px" }}>
             {mnemonic}
           </p>
 
           <p>
-            ⚠ Write this down. Anyone with this phrase can access your wallet.
+            ⚠ Write this down. This is the only way to recover your wallet.
           </p>
+
+          <input
+            type="password"
+            placeholder="Set Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <br /><br />
 
           <button onClick={handleContinue} disabled={loading}>
             {loading ? "Creating..." : "I Have Written It Down"}

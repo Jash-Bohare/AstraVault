@@ -107,7 +107,10 @@ export default function Send() {
 
             {gasInfo && (
                 <>
+                    <p><strong>Nonce:</strong> {gasInfo.nonce.toString()}</p>
+
                     <p><strong>Gas Limit:</strong> {gasInfo.gasLimit.toString()}</p>
+
 
                     <p>
                         <strong>Max Fee:</strong>{" "}

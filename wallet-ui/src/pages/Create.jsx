@@ -6,16 +6,20 @@ import {
 } from "../core/wallet";
 import { encryptPrivateKey } from "../utils/crypto";
 import { useNavigate } from "react-router-dom";
+import { useWallet } from "../store/WalletContext";
 
 export default function Create() {
-  const [mnemonic, setMnemonic] = useState(null);
+  const { setWalletState } = useWallet();
+  const [localMnemonic, setLocalMnemonic] = useState(null);
+
+
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   async function handleGenerate() {
     const m = generateMnemonic();
-    setMnemonic(m);
+    setLocalMnemonic(m);
   }
 
   async function handleContinue() {
@@ -27,20 +31,33 @@ export default function Create() {
     try {
       setLoading(true);
 
-      const pk = await derivePrivateKey(mnemonic);
+      const pk = await derivePrivateKey(localMnemonic);
+
       const address = privateKeyToAddress(pk);
+      const encrypted = await encryptPrivateKey(localMnemonic, password);
 
-      const encrypted = await encryptPrivateKey(pk, password);
-
+      const accs = [{ address, index: 0 }];
       localStorage.setItem(
         "wallet",
         JSON.stringify({
           address,
-          crypto: encrypted
+          accounts: accs,
+          crypto: encrypted,
+          isMnemonic: true
         })
       );
 
+
+      setWalletState({
+        mnemonic: localMnemonic,
+        accounts: accs,
+        activeAddress: address,
+        privateKey: pk
+      });
+
       navigate("/dashboard");
+
+
     } catch (err) {
       console.error(err);
       alert("Something went wrong");
@@ -53,19 +70,20 @@ export default function Create() {
     <div>
       <h2>Create Wallet</h2>
 
-      {!mnemonic && (
+      {!localMnemonic && (
         <button onClick={handleGenerate}>
           Generate Wallet
         </button>
       )}
 
-      {mnemonic && (
+      {localMnemonic && (
         <>
           <h3>Your Secret Recovery Phrase</h3>
 
           <p style={{ background: "#eee", padding: "10px" }}>
-            {mnemonic}
+            {localMnemonic}
           </p>
+
 
           <p>
             ⚠ Write this down. This is the only way to recover your wallet.

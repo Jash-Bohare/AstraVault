@@ -11,8 +11,9 @@ const ERC20_ABI = [
 ];
 
 // 1️⃣ Fetch Token Metadata
-export async function getTokenMetadata(tokenAddress) {
-    const contract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
+export async function getTokenMetadata(tokenAddress, customProvider = provider) {
+    const contract = new ethers.Contract(tokenAddress, ERC20_ABI, customProvider);
+
 
     const [name, symbol, decimals] = await Promise.all([
         contract.name(),
@@ -28,8 +29,9 @@ export async function getTokenMetadata(tokenAddress) {
 }
 
 // 2️⃣ Fetch Token Balance
-export async function getTokenBalance(tokenAddress, userAddress) {
-    const contract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
+export async function getTokenBalance(tokenAddress, userAddress, customProvider = provider) {
+    const contract = new ethers.Contract(tokenAddress, ERC20_ABI, customProvider);
+
     return await contract.balanceOf(userAddress);
 }
 

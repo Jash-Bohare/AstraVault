@@ -1,17 +1,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { useWallet } from "../store/WalletContext";
 import { getTokenMetadata } from "../rpc/token";
 
 export default function AddToken() {
+  const { provider, networkId } = useWallet();
+
+
   const [address, setAddress] = useState("");
   const [tokenInfo, setTokenInfo] = useState(null);
   const navigate = useNavigate();
 
   async function handleFetch() {
     try {
-      const metadata = await getTokenMetadata(address);
+      const metadata = await getTokenMetadata(address, provider);
       setTokenInfo(metadata);
     } catch (err) {
+
       console.error(err);
       alert("Invalid token contract");
     }
@@ -19,16 +25,20 @@ export default function AddToken() {
 
   function handleAdd() {
     const stored = JSON.parse(localStorage.getItem("wallet"));
+    const networkTokens = stored.networkTokens || {};
 
     const updated = {
       ...stored,
-      tokens: [...(stored.tokens || []), { address, ...tokenInfo }]
+      networkTokens: {
+        ...networkTokens,
+        [networkId]: [...(networkTokens[networkId] || []), { address, ...tokenInfo }]
+      }
     };
 
     localStorage.setItem("wallet", JSON.stringify(updated));
-
     navigate("/dashboard");
   }
+
 
   return (
     <div>

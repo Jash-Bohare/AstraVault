@@ -1,14 +1,20 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { useWallet } from "../store/WalletContext";
 import { derivePrivateKey, privateKeyToAddress } from "../core/wallet";
 import { encryptPrivateKey } from "../utils/crypto";
 import * as bip39 from "bip39";
-import { useNavigate } from "react-router-dom";
+
 
 export default function Import() {
-  const [mnemonic, setMnemonic] = useState("");
+  const { setWalletState } = useWallet();
+  const [localMnemonic, setLocalMnemonic] = useState("");
+
   const [privateKeyInput, setPrivateKeyInput] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
 
   async function handleImport() {
     if (!password) {
@@ -20,14 +26,15 @@ export default function Import() {
       let privateKey;
 
       // If mnemonic provided
-      if (mnemonic) {
-        const valid = bip39.validateMnemonic(mnemonic);
+      if (localMnemonic) {
+        const valid = bip39.validateMnemonic(localMnemonic);
         if (!valid) {
           alert("Invalid mnemonic phrase");
           return;
         }
-        privateKey = await derivePrivateKey(mnemonic);
+        privateKey = await derivePrivateKey(localMnemonic);
       }
+
 
       // If private key provided
       else if (privateKeyInput) {
@@ -42,19 +49,29 @@ export default function Import() {
       }
 
       const address = privateKeyToAddress(privateKey);
-      const encrypted = await encryptPrivateKey(privateKey, password);
+      const encrypted = await encryptPrivateKey(localMnemonic || privateKey, password);
 
+      const accs = [{ address, index: 0 }];
       localStorage.setItem(
         "wallet",
         JSON.stringify({
           address,
-          crypto: encrypted
+          accounts: accs,
+          crypto: encrypted,
+          isMnemonic: !!localMnemonic
         })
       );
 
-      sessionStorage.setItem("privateKey", privateKey);
+      setWalletState({
+        mnemonic: localMnemonic || null,
+        accounts: accs,
+        activeAddress: address,
+        privateKey: privateKey
+      });
 
       navigate("/dashboard");
+
+
 
     } catch (err) {
       console.error(err);
@@ -68,9 +85,10 @@ export default function Import() {
 
       <textarea
         placeholder="Enter 12-word mnemonic"
-        value={mnemonic}
-        onChange={(e) => setMnemonic(e.target.value)}
+        value={localMnemonic}
+        onChange={(e) => setLocalMnemonic(e.target.value)}
       />
+
 
       <br /><br />
 

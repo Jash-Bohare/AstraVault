@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import { useWallet } from "../store/WalletContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { ethers } from "ethers";
-import { provider } from "../rpc/provider";
 import { prepareTokenTransfer } from "../rpc/token";
+
 import { broadcastTx } from "../rpc/transaction";
 
 export default function SendToken() {
-  const { privateKey } = useWallet();
+  const { activePrivateKey, provider, networkId } = useWallet();
   const navigate = useNavigate();
+
   const { address } = useParams(); // token contract address
+
 
   const [token, setToken] = useState(null);
   const [to, setTo] = useState("");
@@ -18,13 +20,16 @@ export default function SendToken() {
 
   // 🔐 Protect route
   useEffect(() => {
-    if (!privateKey) {
+    if (!activePrivateKey) {
       navigate("/unlock");
       return;
     }
 
+
     const stored = JSON.parse(localStorage.getItem("wallet"));
-    const found = stored.tokens?.find(t => t.address === address);
+    const networkScopedTokens = (stored.networkTokens && stored.networkTokens[networkId]) || [];
+    const found = networkScopedTokens.find(t => t.address === address);
+
 
     if (!found) {
       navigate("/dashboard");
@@ -32,7 +37,7 @@ export default function SendToken() {
     }
 
     setToken(found);
-  }, [privateKey, address, navigate]);
+  }, [activePrivateKey, address, navigate]);
 
   if (!token) return null;
 
@@ -40,7 +45,8 @@ export default function SendToken() {
     try {
       setStatus("Preparing transaction...");
 
-      const signer = new ethers.Wallet(privateKey, provider);
+      const signer = new ethers.Wallet(activePrivateKey, provider);
+
 
       const txData = await prepareTokenTransfer(
         token.address,

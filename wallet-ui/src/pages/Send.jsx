@@ -11,8 +11,9 @@ import {
 import { provider } from "../rpc/provider";
 
 export default function Send() {
-    const { privateKey } = useWallet();
+    const { activePrivateKey, provider, network } = useWallet();
     const navigate = useNavigate();
+
 
     const [to, setTo] = useState("");
     const [amount, setAmount] = useState("");
@@ -20,18 +21,20 @@ export default function Send() {
     const [status, setStatus] = useState("");
 
     useEffect(() => {
-        if (!privateKey) {
+        if (!activePrivateKey) {
             navigate("/unlock");
         }
-    }, [privateKey, navigate]);
+    }, [activePrivateKey, navigate]);
 
-    if (!privateKey) return null;
+    if (!activePrivateKey) return null;
+
 
     async function prepareTransaction() {
         try {
             setStatus("Preparing transaction...");
 
-            const wallet = new ethers.Wallet(privateKey, provider);
+            const wallet = new ethers.Wallet(activePrivateKey, provider);
+
 
             const nonce = await getNonce(wallet.address);
             const gasData = await getGasData();
@@ -64,9 +67,10 @@ export default function Send() {
         try {
             setStatus("Signing transaction...");
 
-            const wallet = new ethers.Wallet(privateKey, provider);
+            const wallet = new ethers.Wallet(activePrivateKey, provider);
 
             const signedTx = await wallet.signTransaction(gasInfo);
+
 
             setStatus("Broadcasting...");
 
@@ -85,7 +89,7 @@ export default function Send() {
 
     return (
         <div>
-            <h2>Send ETH</h2>
+            <h2>Send {network.name} ({network.currency})</h2>
 
             <input
                 placeholder="Recipient Address"
@@ -94,7 +98,7 @@ export default function Send() {
             />
 
             <input
-                placeholder="Amount in ETH"
+                placeholder={`Amount in ${network.currency}`}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
             />
@@ -126,8 +130,9 @@ export default function Send() {
                         <strong>Estimated Tx Cost:</strong>{" "}
                         {ethers.formatEther(
                             gasInfo.gasLimit * gasInfo.maxFeePerGas
-                        )} ETH
+                        )} {network.currency}
                     </p>
+
 
                     <br />
 

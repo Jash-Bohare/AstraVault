@@ -8,14 +8,15 @@ export function generateMnemonic() {
 }
 
 // Derive Private Key
-export async function derivePrivateKey(mnemonic) {
+export async function derivePrivateKey(mnemonic, index = 0) {
   const seed = await bip39.mnemonicToSeed(mnemonic);
   const hd = HDKey.fromMasterSeed(seed);
-  const child = hd.derive("m/44'/60'/0'/0/0");
+  const child = hd.derive(`m/44'/60'/0'/0/${index}`);
 
   if (!child.privateKey) {
     throw new Error("Private key derivation failed");
   }
+
 
   // Convert Uint8Array → hex string
   return "0x" + Buffer.from(child.privateKey).toString("hex");

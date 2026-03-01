@@ -7,8 +7,10 @@ import Unlock from "./pages/Unlock";
 import Send from "./pages/Send";
 import AddToken from "./pages/AddToken";
 import SendToken from "./pages/SendToken";
+import SignMessage from "./pages/SignMessage";
 
 function App() {
+
   return (
     <BrowserRouter>
       <Routes>
@@ -20,7 +22,9 @@ function App() {
         <Route path="/send" element={<Send />} />
         <Route path="/add-token" element={<AddToken />} />
         <Route path="/send-token/:address" element={<SendToken />} />
+        <Route path="/sign" element={<SignMessage />} />
       </Routes>
+
     </BrowserRouter>
   );
 }

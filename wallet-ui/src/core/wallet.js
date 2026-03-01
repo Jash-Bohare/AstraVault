@@ -27,3 +27,14 @@ export function privateKeyToAddress(privateKey) {
   const wallet = new ethers.Wallet(privateKey);
   return wallet.address;
 }
+
+// Sign Personal Message (EIP-191)
+export async function signPersonalMessage(privateKey, message) {
+  const wallet = new ethers.Wallet(privateKey);
+  return await wallet.signMessage(message);
+}
+
+// Verify Personal Message
+export function verifyPersonalMessage(message, signature) {
+  return ethers.verifyMessage(message, signature);
+}

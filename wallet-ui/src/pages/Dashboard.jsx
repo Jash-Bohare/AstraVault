@@ -136,7 +136,11 @@ export default function Dashboard() {
         <button onClick={() => navigate("/add-token")} style={{ flex: 1 }}>
           Add Token
         </button>
+        <button onClick={() => navigate("/sign")} style={{ flex: 1, backgroundColor: "#6366f1", color: "white" }}>
+          Sign Message
+        </button>
       </div>
+
 
       <br />
 

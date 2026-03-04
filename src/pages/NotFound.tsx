@@ -34,11 +34,12 @@ const NotFound = () => {
               Return
             </Link>
           </Button>
-          <Button asChild className="glow-cyan-strong rounded-2xl h-12 px-8 font-black shadow-xl shadow-primary/20">
-            <Link to="/" className="flex items-center gap-2">
-              <Home className="w-4 h-4" />
-              Main Vault
-            </Link>
+          <Button
+            onClick={() => navigate("/")}
+            className="glow-amber h-12 px-8 rounded-xl font-black text-[9px] uppercase tracking-widest gap-2 shadow-xl shadow-primary/10 hover:scale-105 active:scale-95 transition-all"
+          >
+            <Home className="w-4 h-4" />
+            Main Vault
           </Button>
         </div>
       </div>

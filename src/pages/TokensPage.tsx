@@ -135,7 +135,7 @@ export default function TokensPage() {
 
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger asChild>
-              <Button className="glow-cyan-strong h-12 px-6 rounded-xl font-black text-[9px] uppercase tracking-widest gap-2 shadow-xl shadow-primary/10 hover:scale-105 active:scale-95 transition-all">
+              <Button className="glow-amber-strong h-12 px-6 rounded-xl font-black text-[9px] uppercase tracking-widest gap-2 shadow-xl shadow-primary/10 hover:scale-105 active:scale-95 transition-all">
                 <Plus className="w-4 h-4" />
                 Import Token
               </Button>
@@ -185,7 +185,7 @@ export default function TokensPage() {
               </div>
               <DialogFooter className="gap-2">
                 <Button variant="outline" onClick={() => setIsModalOpen(false)} className="glass border-white/5 rounded-xl">Cancel</Button>
-                <Button onClick={handleAddToken} disabled={!tempToken} className="glow-cyan-strong font-bold rounded-xl px-6">Import</Button>
+                <Button onClick={handleAddToken} disabled={!tempToken} className="glow-amber-strong font-bold rounded-xl px-6">Import</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

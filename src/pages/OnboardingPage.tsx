@@ -209,7 +209,7 @@ export default function OnboardingPage() {
                             </div>
                             <Button
                                 onClick={handleFinishCreate}
-                                className="w-full h-12 glow-cyan-strong font-black text-[9px] uppercase tracking-widest gap-2 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                className="w-full h-12 glow-amber font-black text-[9px] uppercase tracking-widest gap-2 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
                                 disabled={!password || password !== confirmPassword}
                             >
                                 Secure Identity <ArrowRight className="w-4 h-4" />

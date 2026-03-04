@@ -51,7 +51,7 @@ export default function UnlockPage() {
     <div className="h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden font-outfit">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.05] pointer-events-none"
-        style={{ background: 'radial-gradient(circle, hsl(186 100% 50%) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, hsl(38 92% 50%) 0%, transparent 70%)' }}
       />
 
       <div className="w-full max-w-sm z-10">
@@ -80,8 +80,8 @@ export default function UnlockPage() {
             </div>
             <Button
               type="submit"
+              className="w-full h-12 rounded-xl glow-amber-strong font-black text-[11px] uppercase tracking-[0.2em] shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-primary/10 mt-2"
               disabled={password.length === 0}
-              className="w-full h-14 glow-cyan-strong font-black text-[9px] uppercase tracking-widest gap-2 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               Authorize Protocol Access
               <ArrowRight className="w-4 h-4" />

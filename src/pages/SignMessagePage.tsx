@@ -22,6 +22,7 @@ export default function SignMessagePage() {
   // Verification States
   const [vMessage, setVMessage] = useState("");
   const [vSignature, setVSignature] = useState("");
+  const [vExpectedAddress, setVExpectedAddress] = useState("");
   const [recoveredAddress, setRecoveredAddress] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<"idle" | "success" | "error">("idle");
@@ -33,7 +34,7 @@ export default function SignMessagePage() {
     }
     setIsSigning(true);
     try {
-      const sig = await signPersonalMessage(activePrivateKey, message.trim());
+      const sig = await signPersonalMessage(activePrivateKey, message);
       setSignature(sig);
       toast.success("Message signed successfully");
     } catch (err: any) {
@@ -44,7 +45,7 @@ export default function SignMessagePage() {
     }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const trimmedMsg = vMessage.trim();
     const trimmedSig = vSignature.trim();
 
@@ -59,23 +60,27 @@ export default function SignMessagePage() {
 
     try {
       // Small timeout to show loading state for better UX
-      setTimeout(() => {
-        try {
-          const address = verifyPersonalMessage(trimmedMsg, trimmedSig);
-          setRecoveredAddress(address);
-          setVerificationStatus("success");
-          toast.success("Signature verified");
-        } catch (err: any) {
-          console.error(err);
-          setVerificationStatus("error");
-          toast.error("Verification failed");
-        } finally {
-          setIsVerifying(false);
-        }
-      }, 400);
-    } catch (err) {
-      setIsVerifying(false);
+      await new Promise((r) => setTimeout(r, 400));
+
+      const address = verifyPersonalMessage(trimmedMsg, trimmedSig);
+      const expected = vExpectedAddress.trim().toLowerCase();
+      const recovered = address.toLowerCase();
+
+      setRecoveredAddress(address);
+
+      if (expected && recovered !== expected) {
+        setVerificationStatus("error");
+        toast.error("Signature Mismatch: Signer is not the expected address");
+      } else {
+        setVerificationStatus("success");
+        toast.success("Signature Verified Successfully");
+      }
+    } catch (err: any) {
+      console.error(err);
       setVerificationStatus("error");
+      toast.error("Invalid Signature: Could not recover address");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -86,6 +91,7 @@ export default function SignMessagePage() {
     }
     setVMessage(message);
     setVSignature(signature);
+    setVExpectedAddress(activeAddress || "");
     setVerificationStatus("idle");
     setRecoveredAddress("");
   };
@@ -96,7 +102,7 @@ export default function SignMessagePage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isMatched = recoveredAddress?.toLowerCase() === activeAddress?.toLowerCase();
+  const isMatched = recoveredAddress?.toLowerCase() === vExpectedAddress?.toLowerCase();
 
   return (
     <div className="h-full flex flex-col p-6 overflow-hidden animate-fade-in font-outfit max-w-7xl mx-auto w-full">
@@ -149,7 +155,7 @@ export default function SignMessagePage() {
             <Button
               onClick={handleSign}
               disabled={!message || isSigning}
-              className="w-full h-12 rounded-xl glow-cyan-strong font-black text-[9px] uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/10"
+              className="w-full h-12 rounded-xl glow-amber-strong font-black text-[9px] uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/10"
             >
               {isSigning ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign Message"}
             </Button>
@@ -181,9 +187,9 @@ export default function SignMessagePage() {
           </div>
 
           <div className="space-y-5 relative z-10 flex-1 flex flex-col">
-            <div className="space-y-3 flex-1 flex flex-col min-h-0">
-              <div className="space-y-2 flex-1 flex flex-col">
-                <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 opacity-60">Message</Label>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 opacity-60">Message Content</Label>
                 <Textarea
                   value={vMessage}
                   onChange={(e) => {
@@ -191,7 +197,7 @@ export default function SignMessagePage() {
                     if (verificationStatus !== "idle") setVerificationStatus("idle");
                   }}
                   placeholder="Paste original message here..."
-                  className="glass-input p-4 rounded-xl border-white/5 focus:border-primary/50 font-mono text-xs transition-all bg-white/5 shadow-inner resize-none flex-1 leading-relaxed"
+                  className="glass-input p-4 rounded-xl border-white/5 focus:border-amber-500/50 font-mono text-xs transition-all bg-white/5 shadow-inner resize-none min-h-[100px] leading-relaxed"
                 />
               </div>
 
@@ -204,7 +210,30 @@ export default function SignMessagePage() {
                     if (verificationStatus !== "idle") setVerificationStatus("idle");
                   }}
                   placeholder="0x..."
-                  className="glass-input h-12 px-4 rounded-xl border-white/5 focus:border-primary/50 font-mono text-xs transition-all bg-white/5 shadow-inner"
+                  className="glass-input h-12 px-4 rounded-xl border-white/5 focus:border-amber-500/50 font-mono text-xs transition-all bg-white/5 shadow-inner"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center ml-1">
+                  <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-60">Expected Signer (Optional)</Label>
+                  {!vExpectedAddress && activeAddress && (
+                    <button
+                      onClick={() => setVExpectedAddress(activeAddress)}
+                      className="text-[8px] font-black text-primary uppercase tracking-widest hover:opacity-70"
+                    >
+                      Use My Address
+                    </button>
+                  )}
+                </div>
+                <Input
+                  value={vExpectedAddress}
+                  onChange={(e) => {
+                    setVExpectedAddress(e.target.value);
+                    if (verificationStatus !== "idle") setVerificationStatus("idle");
+                  }}
+                  placeholder="0x..."
+                  className="glass-input h-12 px-4 rounded-xl border-white/5 focus:border-amber-500/50 font-mono text-xs transition-all bg-white/5 shadow-inner"
                 />
               </div>
             </div>
@@ -215,7 +244,7 @@ export default function SignMessagePage() {
               variant="secondary"
               className={cn(
                 "w-full h-12 bg-white/10 hover:bg-white/20 font-black rounded-xl transition-all shadow-lg border border-white/5 uppercase text-[9px] tracking-widest mt-auto",
-                verificationStatus === "success" && "border-primary/30 bg-primary/5"
+                verificationStatus === "success" && "border-amber-500/30 bg-amber-500/5"
               )}
             >
               {isVerifying ? <Loader2 className="w-5 h-5 animate-spin" /> : "Verify Signature"}

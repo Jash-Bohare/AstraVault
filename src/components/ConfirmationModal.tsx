@@ -74,8 +74,11 @@ export function ConfirmationModal({ open, onClose, onConfirm, loading, data }: P
             <Button variant="outline" onClick={onClose} className="flex-1" disabled={loading}>
               Cancel
             </Button>
-            <Button onClick={onConfirm} className="flex-1 glow-cyan-strong" disabled={loading}>
-              {loading ? "Signing..." : "Confirm & Sign"}
+            <Button
+              onClick={onConfirm}
+              className="glow-amber-strong bg-primary text-black font-bold h-12 px-6 rounded-xl hover:scale-105 active:scale-95 transition-all"
+            >
+              Confirm Transaction
             </Button>
           </div>
         </div>

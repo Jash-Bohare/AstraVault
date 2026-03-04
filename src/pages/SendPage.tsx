@@ -240,7 +240,7 @@ export default function SendPage() {
             </div>
 
             <Button
-              className="w-full h-12 rounded-xl glow-cyan font-black text-[9px] uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/5 mt-auto"
+              className="w-full h-12 rounded-xl glow-amber font-black text-[9px] uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/5 mt-auto"
               onClick={handleReview}
               disabled={isEstimating || !recipient || !amount}
             >
@@ -316,7 +316,7 @@ export default function SendPage() {
 
               <div className="space-y-3 mt-auto">
                 <Button
-                  className="w-full h-12 rounded-xl glow-cyan-strong font-black text-[9px] uppercase tracking-widest group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] shadow-2xl shadow-primary/20"
+                  className="w-full h-12 rounded-xl glow-amber-strong font-black text-[9px] uppercase tracking-widest group relative overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] shadow-2xl shadow-primary/20"
                   onClick={handleSend}
                   disabled={loading}
                 >

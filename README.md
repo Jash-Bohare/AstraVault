@@ -1,57 +1,71 @@
-# Astra Vault Wallet
+# Astra Vault 🛡️
 
-Astra Vault is a premium, high-fidelity Ethereum wallet designed for a seamless and professional user experience. 
+Astra Vault is a premium, high-fidelity Ethereum wallet designed for developers and enthusiasts who prioritize security, transparency, and a seamless user experience. It serves as both a functional tool and a masterclass in blockchain fundamentals.
 
-## Features
+---
 
-- **Standardized UI**: Clean, professional terminology and typography.
-- **Secure by Design**: Sensitive data like private keys and mnemonics are stored in memory and encrypted.
-- **Multi-Account Support**: Easily derive and manage multiple accounts from a single mnemonic.
-- **Token Management**: Track your assets across different networks with easy token importing.
-- **Premium Aesthetics**: Vibrant glassmorphism design with smooth, subtle micro-animations.
+## 🚀 Key Features
 
-## Getting Started
+### 🔐 Identity & Account Management
+- **BIP-39 Mnemonic Backups**: Securely generate or import 12-word recovery phrases (128-bit entropy).
+- **HD Wallet Derivation (BIP-32/BIP-44)**: Manage infinite accounts from a single seed using the standardized Ethereum path: `m/44'/60'/0'/0/${index}`.
+- **Multisig-Ready Architecture**: Built on top of `ethers.js v6` for reliable key and address derivation.
+
+### 💸 Transaction & Asset Engine
+- **Full Asset Portfolios**: Track Native ETH and custom ERC-20 tokens across networks.
+- **Modern Gas Logic (EIP-1559)**: Real-time calculation of Base Fees and Tip Caps for predictable transaction inclusion.
+- **Transmission Portal**: Two-stage transaction verification process to prevent accidental broadcasts.
+- **Dynamic Asset Discovery**: Import any custom ERC-20 token by simply providing its contract address—Astra Vault handles the metadata fetching automatically.
+
+### ✍️ Signature & Verification Suite
+- **EIP-191 Messaging**: Sign human-readable messages to prove ownership of your address without making a transaction.
+- **Signature Audit Tool**: Verify external signatures by recovering the signer's address from a message and a hash.
+- **Fast-Verify Workflow**: Instantly check your own signatures to verify cryptographic integrity.
+
+### 🛡️ Security Protocol
+- **Encryption at Rest**: Sensitive data is never stored in plaintext. All mnemonics and private keys are encrypted using **AES-256-GCM**.
+- **PBKDF2 Key Stretching**: Passwords are reinforced with **310,000 iterations** and unique salts to thwart brute-force attacks.
+- **Session-Locked Memory**: Decrypted keys exist only in volatile React state and are wiped upon browser refresh or tab closure.
+- **Factory Reset**: A built-in "Danger Zone" utility to securely wipe all local data with a single click.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Core**: React 18 / Vite / TypeScript
+- **Blockchain**: Ethers.js v6 / BIP39 / @scure/bip32
+- **Security**: Web Crypto API (SubtleCrypto)
+- **UI/UX**: Tailwind CSS / Framer Motion / Shadcn UI / Radix
+- **State Management**: React Context API + TanStack Query
+- **Icons**: Lucide React
+
+---
+
+## 🚦 Getting Started
 
 ### Prerequisites
-
-- Node.js (v18 or higher)
-- npm or bun
+- Node.js (v18+)
+- Infura API Key (or other RPC provider)
 
 ### Installation
-
-1. Clone the repository:
+1. **Clone the repository**:
    ```bash
-   git clone <repository-url>
+   git clone <repo-url>
    ```
-2. Install dependencies:
+2. **Install dependencies**:
    ```bash
    npm install
    ```
-3. Set up environment variables:
-   Copy `.env.example` to `.env` and add your Infura API key:
+3. **Environment Setup**:
+   Create a `.env` file in the root based on `.env.example`:
    ```bash
-   VITE_INFURA_ID=your_infura_id_here
+   VITE_INFURA_ID=your_infura_key
+   ```
+4. **Run Development Server**:
+   ```bash
+   npm run dev
    ```
 
-### Development
+---
 
-Run the development server:
-```bash
-npm run dev
-```
-
-### Building for Production
-
-Build the production bundle:
-```bash
-npm run build
-```
-
-## Technologies Used
-
-- **Framework**: React 18 with Vite
-- **Styling**: Tailwind CSS & Vanilla CSS
-- **Components**: shadcn/ui & Radix UI
-- **Icons**: Lucide React
-- **Blockchain Interface**: Ethers.js (v6)
-- **State Management**: React Context API & React Query
+*Created with focus on security and transparency.*
